@@ -1,0 +1,13 @@
+ratio:
+  #  训练集，评估集，测试集比例，总和需等于1
+  train: 0.8
+  val: 0.1
+  test: 0.1
+
+path:
+  #  存放源数据图片的路径
+  origin_images: /data/data/changjihuanliuzhanbiaoji/VOCdevkit/VOC2007/JPEGImages1/
+  #  存放源数据标注的路径
+  origin_annotations: /data/data/changjihuanliuzhanbiaoji/VOCdevkit/VOC2007/Annotations1/
+  #  划分数据集后输出数据的路径
+  output: /data/data/boat/processed_data_test
