@@ -4,7 +4,7 @@ import json
 import argparse
 import os
 from tqdm import tqdm
-import cv2
+from PIL import Image
 
 CONFIG_PATH = '../config/transform_segmentation/txt2json.yaml'
 
@@ -41,8 +41,8 @@ def txtToJson(origin_images_path: str, origin_annotations_path: str, output_path
 
     for k, index in enumerate(tqdm(origin_images_index)):
         txt_file = index.replace('images', 'txt').replace('.jpg', '.txt').replace('.png', '.txt')
-        im = cv2.imread(os.path.join(origin_images_path, index))
-        height, width, _ = im.shape
+        with Image.open(os.path.join(origin_images_path, index)) as image:
+            width, height = image.size
 
         # 切换dataset的引用对象，从而划分数据集
         if index in train_img:
@@ -65,19 +65,20 @@ def txtToJson(origin_images_path: str, origin_annotations_path: str, output_path
                 x, y, w, h = map(float, label[1:5])
 
                 # convert x,y,w,h to x1,y1,x2,y2
-                H, W, _ = im.shape
-                x1 = (x - w / 2) * W
-                y1 = (y - h / 2) * H
-                x2 = (x + w / 2) * W
-                y2 = (y + h / 2) * H
+                x1 = (x - w / 2) * width
+                y1 = (y - h / 2) * height
+                x2 = (x + w / 2) * width
+                y2 = (y + h / 2) * height
                 # 标签序号从0开始计算, coco2017数据集标号混乱，不管它了。
                 cls_id = int(label[0])
-                width = max(0, x2 - x1)
-                height = max(0, y2 - y1)
+                if (cls_id+1) > len(classes):
+                    raise ValueError("classes.txt not correct. Could not find corresponding label to one of the txt input labels in classes.txt")
+                new_width = max(0, x2 - x1)
+                new_height = max(0, y2 - y1)
 
                 dataset['annotations'].append({
-                    'area': width * height,
-                    'bbox': [x1, y1, width, height],
+                    'area': new_width * new_height,
+                    'bbox': [x1, y1, new_width, new_height],
                     'category_id': cls_id,
                     'id': ann_id_cnt,
                     'image_id': k,

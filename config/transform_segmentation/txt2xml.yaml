@@ -6,11 +6,11 @@ ratio:
 
 path:
   #  存放源数据图片的路径
-  origin_images: /data/data/boat/processed_data/images/train
+  origin_images: /data/data/boat/origin_images
   #  存放源数据标注的路径
-  origin_annotations: /data/data/boat/processed_data/annotations/train
+  origin_annotations: /data/data/boat/labels
   #  划分数据集后输出数据的路径
-  output: /data/data/boat/processed_data_2
+  output: /data/data/boat/processed_data
   #  存放所有类的名称的txt文件,行数对应其序号，如第一行boat对应标签id 0
   #   example.txt
   #  boat

@@ -35,30 +35,33 @@ def convert(origin_annotations_path: str, classes_path: str):
 
     # 打开源标注路径下的所有xml标注文件，转化为txt文件并保存在原标注路径下
     for xml_file in os.listdir(origin_annotations_path):
-        tree = ET.parse(xml_file)
-        root = tree.getroot()
+        print(xml_file)
+        if xml_file.endswith(".xml"):
+            tree = ET.parse(os.path.join(origin_annotations_path, xml_file))
+            root = tree.getroot()
 
-        image_width = int(root.find('size/width').text)
-        image_height = int(root.find('size/height').text)
+            image_width = int(root.find('size/width').text)
+            image_height = int(root.find('size/height').text)
 
-        with open(xml_file.replace(".xml", ".txt"), 'w') as f:
-            for obj in root.findall('object'):
-                class_name = obj.find('name').text
-                class_id = class_map[class_name]
+            with open(os.path.join(origin_annotations_path, xml_file.replace(".xml", ".txt")), 'w') as f:
+                for obj in root.findall('object'):
+                    class_name = obj.find('name').text
+                    class_id = class_map[class_name]
 
-                bbox = obj.find('bndbox')
-                xmin = float(bbox.find('xmin').text)
-                ymin = float(bbox.find('ymin').text)
-                xmax = float(bbox.find('xmax').text)
-                ymax = float(bbox.find('ymax').text)
+                    bbox = obj.find('bndbox')
+                    xmin = float(bbox.find('xmin').text)
+                    ymin = float(bbox.find('ymin').text)
+                    xmax = float(bbox.find('xmax').text)
+                    ymax = float(bbox.find('ymax').text)
 
-                x_center = (xmin + xmax) / (2.0 * image_width)
-                y_center = (ymin + ymax) / (2.0 * image_height)
-                width = (xmax - xmin) / image_width
-                height = (ymax - ymin) / image_height
+                    x_center = (xmin + xmax) / (2.0 * image_width)
+                    y_center = (ymin + ymax) / (2.0 * image_height)
+                    width = (xmax - xmin) / image_width
+                    height = (ymax - ymin) / image_height
 
-                line = f"{class_id} {x_center} {y_center} {width} {height}\n"
-                f.write(line)
+                    line = f"{class_id} {x_center} {y_center} {width} {height}\n"
+                    print(line)
+                    f.write(line)
 
 
 def xmlToTxt(origin_images_path: str, origin_annotations_path: str, output_path: str, classes_path: str, ratio: dict, args):
@@ -74,14 +77,14 @@ def xmlToTxt(origin_images_path: str, origin_annotations_path: str, output_path:
     """
     random_splitter = RandomSplitter(origin_img_path=origin_images_path, origin_annotation_path=origin_annotations_path,
                                      ratio=ratio)
-    random_splitter.getSplitList(suffix="xml", random_state=233)
+    random_splitter.getSplitList(suffix="txt", random_state=233)
 
     # 将源标注文件所处文件夹下的所有xml文件转化为txt文件并存放在该文件夹下
     convert(origin_annotations_path=origin_annotations_path, classes_path=classes_path)
 
     # 移动图片与标注文件
+    random_splitter.outputSplitAnnotations(output_path=output_path, mode="move")
     random_splitter.outputSplitImages(output_path=output_path, mode=args.mode)
-    random_splitter.outputSplitAnnotations(output_path=output_path, mode=args.mode)
 
 
 def transform(args):

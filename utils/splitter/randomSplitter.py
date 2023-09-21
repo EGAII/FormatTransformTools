@@ -30,7 +30,7 @@ class RandomSplitter(Splitter):
             self.random_state = random_state
 
             # 分割数据集
-            train_img, middle_img = train_test_split(self.img_path_list, test_size=1 - self.ratio["train"],
+            train_img, middle_img = train_test_split(os.listdir(self.origin_img_path), test_size=1 - self.ratio["train"],
                                                      random_state=random_state)
             val_img, test_img = train_test_split(middle_img, test_size=(self.ratio["val"] / (1 - self.ratio["train"])),
                                                  random_state=233)

@@ -23,7 +23,6 @@ class Splitter:
             raise OSError("origin_img_path Not Exist")
         self.origin_img_path = origin_img_path
         self.origin_annotation_path = origin_annotation_path
-        self.img_path_list = os.listdir(origin_img_path)
         self.annotation_path_list = os.listdir(origin_annotation_path)
         self.ratio = ratio
         self.train_img = None
@@ -78,9 +77,10 @@ class Splitter:
             os.makedirs(output_test_path)
 
         # 移动/复制图片到目标文件夹
+        img_path_list = os.listdir(self.origin_img_path)
         if mode == "copy":
             print("-----------⬇-------Copying images to output folder at {}-------⬇-----------".format(output_images_path))
-            for k, index in enumerate(tqdm(self.img_path_list)):
+            for k, index in enumerate(tqdm(img_path_list)):
                 if index in self.train_img:
                     shutil.copy(os.path.join(self.origin_img_path, index),
                                 os.path.join(output_train_path, index))
@@ -92,7 +92,7 @@ class Splitter:
                                 os.path.join(output_test_path, index))
         else:
             print("-----------⬇-------Moving images to output folder at {}-------⬇-----------".format(output_images_path))
-            for k, index in enumerate(tqdm(self.img_path_list)):
+            for k, index in enumerate(tqdm(img_path_list)):
                 if index in self.train_img:
                     shutil.move(os.path.join(self.origin_img_path, index),
                                 os.path.join(output_train_path, index))
@@ -133,9 +133,10 @@ class Splitter:
             os.makedirs(output_test_path)
 
         # 移动/复制标注到目标文件夹
+        annotation_path_list = os.listdir(self.origin_annotation_path)
         if mode == "copy":
             print("-----------⬇-------Copying annotations to output folder at {}-------⬇-----------".format(output_annotations_path))
-            for k, index in enumerate(tqdm(self.annotation_path_list)):
+            for k, index in enumerate(tqdm(annotation_path_list)):
                 if index in self.train_annotation:
                     shutil.copy(os.path.join(self.origin_annotation_path, index),
                                 os.path.join(output_train_path, index))
@@ -147,7 +148,7 @@ class Splitter:
                                 os.path.join(output_test_path, index))
         else:
             print("-----------⬇-------Moving annotations to output folder at {}-------⬇-----------".format(output_annotations_path))
-            for k, index in enumerate(tqdm(self.annotation_path_list)):
+            for k, index in enumerate(tqdm(annotation_path_list)):
                 if index in self.train_annotation:
                     shutil.move(os.path.join(self.origin_annotation_path, index),
                                 os.path.join(output_train_path, index))
